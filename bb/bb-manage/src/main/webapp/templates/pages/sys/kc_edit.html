@@ -1,0 +1,232 @@
+<script>
+	KindEditor.ready(function(K) {
+		var editor = K.editor({
+			filePostName  : "uploadFile",
+			uploadJson : '/pic/upload',
+			allowFileManager : true
+		}); 
+		K('#J_selectImage').click(function() {
+			editor.loadPlugin('multiimage', function() {
+				editor.plugin.multiImageDialog({
+					clickFn : function(urlList) {
+						var input = K('#J_imageView');
+						var str = ''; 
+						var div = K('#J_imageView')
+						K.each(urlList, function(i, data) {
+							str += (data.url + ","); 
+						});
+						input.val(str); 
+						editor.hideDialog();
+					}
+				});
+			});
+		});
+	});
+</script>
+<!-- Horizontal Form -->
+<div class="box box-info">
+	<div class="box-header with-border">
+		<h3 class="box-title">添加商品</h3>
+	</div>
+	<!-- /.box-header -->
+	<!-- form start -->
+	<form class="form-horizontal">
+		<div class="form-group">
+			<label for="Id" class="col-sm-2 control-label">商品ID</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="Id" id="Id"
+					placeholder="ID号">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="nameId" class="col-sm-2 control-label">商品名称</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="name" id="nameId"
+					placeholder="名称">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="img1" class="col-sm-2 control-label">商品图片</label>
+			<div class="col-sm-10">
+				<input type="button" id="J_selectImage" class="picFileUpload"
+					value="图片上传" />
+				<input type="hidden" name="image" id="J_imageView"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="str1" class="col-sm-2 control-label">商品描述</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="str1" id="str1"
+					placeholder="描述">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="str2" class="col-sm-2 control-label">商品描述</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="str2" id="str2"
+					placeholder="描述">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="tree1" class="col-sm-2 control-label">商品价格</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="tree1" id="tree1"
+					placeholder="价格">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="tree2" class="col-sm-2 control-label">商品原价</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="tree2" id="tree2"
+					placeholder="原价">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="str3" class="col-sm-2 control-label">商品返贝</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="str3" id="str3"
+					placeholder="返贝">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="str4" class="col-sm-2 control-label">商品材质</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="str4" id="str4"
+					placeholder="材质">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="str5" class="col-sm-2 control-label">商品成分</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="str5" id="str5"
+					placeholder="成分">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="str6" class="col-sm-2 control-label">商品颜色</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="str6" id="str6"
+					placeholder="颜色">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="str7" class="col-sm-2 control-label">商品规格</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="str7" id="str7"
+					placeholder="规格">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="num" class="col-sm-2 control-label">商品总数</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="num" id="num"
+					placeholder="总数">
+			</div>
+		</div>
+		<!-- /.box-body -->
+		<div class="box-footer">
+			<button type="button" class="btn btn-default btn-cancel">Cancel</button>
+			<button type="button" class="btn btn-info pull-right btn-save">Save</button>
+		</div>
+
+		<!-- /.box-footer -->
+	</form>
+</div>
+<script type="text/javascript"
+	src="bower_components/ztree/jquery.ztree.all.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+    	var data = $("#mainContentId").data("data");
+    	doInitEditFormData(data)
+    	$(".box-footer")
+    	.on("click",".btn-save",doSaveOrUpdate)
+    	.on("click",".btn-cancel",doCancel);
+    	
+    });
+    function doInitEditFormData(data){
+    	console.log("data",data);
+    	//1.初始化角色自身信息
+    	$("#Id").val(data.id);
+    	$("#nameId").val(data.name);
+    	$("#str1").val(data.str1);
+    	$("#str2").val(data.str2);
+    	$("#tree1").val(data.tree1);
+    	$("#tree2").val(data.tree2);
+    	$("#str3").val(data.str3);
+    	$("#str4").val(data.str4);
+    	$("#str5").val(data.str5);
+    	$("#str6").val(data.str6);
+    	$("#str7").val(data.str7);
+    	$("#num").val(data.num);
+    	/* //2.初始化菜单信息
+    	//2.1展开树节点
+    	zTree.expandAll(true);
+    	//2.2获取角色对应的菜单id
+    	var menuIds=data.menuIds;
+    	//2.3迭代所有菜单id
+    	for(var i in menuIds){
+    	  //基于菜单id获取ztree中的node节点
+    	  var node=
+    	  zTree.getNodeByParam("id",menuIds[i]);
+    	  //让节点选中
+    	  zTree.checkNode(node,true,false); 
+    	}*/
+    }
+    function doCancel(){
+    	var url="kc/doKcListUI";
+    	$("#mainContentId")
+    	.load(url,function(){
+    	  $("#mainContentId").removeData();
+    	});
+    }
+    
+    function doSaveOrUpdate(){
+    		//debugger
+    	//1.参数(表单数据)
+    	var params=doGetEditFormData();
+    	var data=$("#mainContentId").data("data");
+    	//2.url
+    	var insertUrl="kc/doSaveObject";
+    	var updateUrl="kc/doUpdateObject";
+    	//var url=data?updateUrl:insertUrl;
+    	var url = data ? updateUrl : insertUrl;
+    	//3.ajax request
+    	$.post(url,params,function(result){
+    		if(result.state==1){
+    		   alert(result.message);
+    		   doCancel();
+    		}else{
+    		   alert(result.message);
+    		}
+    	})
+    }
+      function doGetEditFormData(){
+    		var img1s = $("#J_imageView").val();
+    	  	var img2s = img1s.split(",");
+    	  	var img3s = [5];
+    	  	for(var i in img2s){
+    	  		img3s[i] = img2s[i];
+    	  	}
+    	//1.获取角色自身信息
+    	var params={
+    		id:$("#Id").val(),
+    		name:$("#nameId").val(),
+    		img1:img3s[0],
+    		img2:img3s[1],
+    		img4:img3s[2],
+    		img5:img3s[3],
+    		img3:img3s[4],
+    		str1:$("#str1").val(),
+    		str2:$("#str2").val(),
+    		tree1:$("#tree1").val(),
+    		tree2:$("#tree2").val(),
+    		str3:$("#str3").val(),
+    		str4:$("#str4").val(),
+    		str5:$("#str5").val(),
+    		str6:$("#str6").val(),
+    		str7:$("#str7").val(),
+    		num:$("#num").val()
+    	}
+    	return params;
+    }  
+</script>

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: bb-manage
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: Administrator
+Implementation-Vendor-Id: com.bb
+Build-Jdk: 1.8.0_45
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/bb/bb-manage
+Created-By: Maven Integration for Eclipse
+

@@ -1,0 +1,245 @@
+<div class="row">
+	<div class="col-xs-12">
+		<div class="box">
+			<div class="box-header">
+				<h3 class="box-title">商品管理</h3>
+
+				<div class="box-tools">
+					<div class="input-group input-group-sm" style="width: 350px;">
+						<input type="text" name="table_search" id="searchNameId"
+							class="form-control pull-right" placeholder="用户名">
+
+						<div class="input-group-btn">
+							<button type="button" class="btn btn-default btn-search">
+                                <i class="fa fa-search"></i>
+							</button>
+							<button type="button" class="btn btn-default btn-delete">删除</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /.box-header -->
+			<div class="box-body table-responsive no-padding">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+						    <th><input type="checkbox" id="checkAll">全选</th>
+							<th>订单号</th>
+							<th>商品名称</th>
+							<th>数量</th>
+							<th>单价</th>
+							<th>总价</th>
+							<th>物流公司</th>
+							<th>快递单号</th>
+							
+							<th>库存</th>
+						</tr>
+					</thead>
+					<tbody id="tbodyId">
+					    <tr>
+					       <td colspan="7">数据加载中...</td>
+					    </tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="pageId" class="box-footer clearfix">
+			      
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+</div>
+<script type="text/javascript">
+  $(function(){
+	  //异步加载分页页面
+	  $("#pageId").load("doPageUI",doGetObjects);
+	  //搜索按钮事件注册
+	  $(".input-group-btn")
+	  .on("click",".btn-search",doQueryObject)
+	  .on("click",".btn-delete",doDelete)
+	  
+	  //thead中checkbox对象事件注册
+	  $("#checkAll").change(doChangeTBodyCheckboxState);
+	  $("#tbodyId").on("change",".cBox",doChangTHeadCHeckboxState);
+	  $("#tbodyId").on("click",".a1",ss);
+  });
+  
+	function ss(){
+  	  	var tr = $(this).parent().parent();
+  	  	console.log("tr:" + tr);
+  	  	//console.log(tr)
+  	  	var data = tr.data("data");
+  		console.log("data" + data)
+  		var in1 =$(".in1").val();
+  		console.log(in1);
+  		var in2 =$(".in2").val();
+  		if(!confirm("确认提交吗?"))return;
+  		 var url="sp/doUpdateSp"
+  	   //2.定义参数
+  	   var params={"spid":data.spid,"num":data.num,"wuliugs":in1,"danhao":in2,"id":data.id};
+  		 $.post(url,params,function(result){
+  		   if(result.state==1){
+  			   alert(result.message);
+  			   //刷新页面
+  			   doRefrush();//方式1
+  			   //方式2
+  			   /* var tr=$("tbody input[type='radio']:checked")
+  		          .parents("tr");
+  		          tr.remove();//移出tr对象 */
+  		   }else{
+  			   alert(result.message);
+  		   }
+  	   })
+  	} 
+  function doChangTHeadCHeckboxState(){
+	  var flag=true;
+	  $("#tbodyId input[type='checkbox']")
+	  .each(function(){
+		  flag=flag&$(this).prop("checked");
+	  });
+	  $("#checkAll").prop("checked",flag);
+  }
+  function doChangeTBodyCheckboxState(){
+	  //1.获取全选(checkAll)对象的状态值
+	var flag= $(this).prop("checked");
+	  //2.修改tbody中checkbox对象的状态值
+	  $("#tbodyId input[type='checkbox']")
+	  .each(function(){
+		  $(this).prop("checked",flag);
+	  })
+  }
+  function doDelete(){
+	//执行删除业务
+	  	//1.获取选中记录的id值并校验
+	  	let idArray=doGetCheckedIds();
+		if(idArray.length==0){
+			alert("请先选中")
+		}
+		//console.log(idArray);
+	  	//2.提示是否删除
+	  	if(!confirm("确定删除吗")) return;
+	  	//console.log(idArray);
+	  	//3.定义删除的url
+	  	var url="log/doDeleteObjects";
+	  	//4.定义删除时要传递的参数
+	  	var params={"ids":idArray.toString()};
+	  	
+	  	//5.执行异步删除业务
+	  	$.post(url,params,function(result){
+	  		if(result.state==1){
+	  			 alert(result.message);
+	  			 //刷新策略(重新查询,清空tbody内容)
+	  			 doRefrush();
+	  		}else{
+	  			 alert(result.message);
+	  		}
+	  	})
+  }
+  function doRefrush(){
+	  //1.获取当前页码值,总页数
+	  var pageCurrent=$("#pageId").data("pageCurrent");
+	  var pageCount=$("#pageId").data("pageCount");
+	  //2.获取checkAll的状态值
+		var flag=  $("#checkAll").prop("checked");
+		if(pageCurrent==pageCount&&pageCurrent==1&&flag){
+    		$("#checkAll").prop("checked",false);
+    		$("#tbodyId").empty();
+    		doInitPagination();
+    		return;
+    	}
+	  //3.修改当前页码值
+	  
+	  if(pageCurrent!=1&&flag&&pageCurrent==pageCount){
+		  pageCurrent--;
+		  $("#pageId").data("pageCurrent",pageCurrent);
+	  }
+	  doGetObjects();
+  }
+  function doGetCheckedIds(){
+	  //1.定义一个数组,用于存储id
+	  let array=[];
+	  //2.遍历所有checkbox 获取选中的id存数
+	  $("#tbodyId input[type='checkbox']")
+	  .each(function(){//发现checkbox则执行该函数
+		  //$(this)代表迭代的input对象
+		  if($(this).prop("checked")){
+			  array.push($(this).val())
+		  }
+	  });
+	  //3.返回存储的id的数组
+	  return array;
+  }
+  	
+  function doQueryObject(){
+	  //1.初始化当前页码值为1
+	  $("#pageId").data("pageCurrent",1);
+	  doGetObjects();
+  }
+	  //异步查询用户行为日志
+	 function doGetObjects(){
+		 $("#checkAll").prop("checked",false);
+		  //1.定义请求的参数
+		  var url ="sp/doFindPageObject";
+		  //2.定义请求的参数
+		  var pageCurrent=$("#pageId").data("pageCurrent");
+		  if(!pageCurrent) pageCurrent=1;
+		  var params={"pageCurrent":pageCurrent};
+		  //点击查询按钮时username可能会输入的值
+		  var username=$("#searchNameId").val();
+		 
+		  if(username)params.username=username;
+		  //3.发送异步请求
+		  $.getJSON(url,params,function(result){
+			  //console.log(result)
+			  doHandleResponseResult(result);
+		  });
+  }
+  
+  	function  doHandleResponseResult(result){
+	  if(result.state==1){
+		  //1.将日志结束添加到tbody中
+		  doSetTableBOdyRows(result.data.records)
+		  //2.将日志分页信息添加到pageId位置
+		  doSetPagination(result.data)
+	  }else{
+		  
+	  }
+  }
+  	function doSetTableBOdyRows(records){
+  		//1.获取tbody对象,并清空数据
+  		var tBody =$("#tbodyId");
+  		tBody.empty();
+  		//console.log(records)
+  		//2.迭代日志记录records,将其追加到tbody
+  		for(var i=0;i<records.length;i++){
+  			//2.1创建tr对象(一行)
+  			var tr=$("<tr></tr>")
+  			//2.2创建多个td对象(多列)
+  			var tds=doCreateTds(records[i]);
+  			tr.data("data",records[i]);
+  			//2.3将td追加到tr对象中
+  			tr.append(tds);
+  			//2.4将tr追加到tbody中
+  			tBody.append(tr);
+  		}
+  	}
+
+  	function doCreateTds(data){
+ 	   var tds="<td><input type='checkbox' class='cBox' name='cItem' value='"+data.id+"'></td>"+
+ 	  			"<td >"+data.id+"</td>"+	
+ 		   	 "<td class='t1'>"+data.name+"</td>"+
+ 		     "<td class='t2'>"+data.num+"</td>"+
+ 		     /* "<td>"+data.method+"</td>"+ */
+ 		     "<td>"+data.price+"</td>"+
+ 		     "<td>"+data.price*data.num+"</td>"+
+ 		    "<td> <input style='width:50px' type='text' name='wuliugs' class='in1'/> </td>"+
+ 		     "<td> <input style='width:200px' type='text' name='danhao'class='in2'/> </td>"+
+ 		      "<td>"+data.nu+"</td>"+
+ 		      "<td><a class='a1'>提交</a></td>"
+ 		      ;
+ 			return tds;
+    }
+  	 
+  	
+</script>

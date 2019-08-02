@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.bb.pj.sys.dao.SysspDao">
+  <sql id="qqq">
+  		<where>
+  		<if test="username!=null and username!=''">
+  		 username like concat("%",#{username},"%")
+  		 </if>
+  		 </where>
+  	</sql>
+  	<select id="getRowCount" resultType="int" >
+  		select count(*) from tang_05
+  		<include refid="qqq"/>
+  	</select>
+  	<select id="findPageOBjects" resultType="com.bb.pj.sys.entity.Syssp">
+  		select * from tang_05
+  		<include refid="qqq"/>
+  		 limit #{startIndex},#{pageSize}
+   </select>
+   <select id="findkucun"  resultType="int">
+   		select num from tang_01 where id=#{id}
+   </select>
+   <update id="updateSp">
+   		update tang_01 set num=#{num} where id=#{spid}
+   </update>
+  </mapper>

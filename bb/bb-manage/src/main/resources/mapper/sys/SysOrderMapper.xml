@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bb.pj.sys.dao.SysOrderDao">
+	 <select id="findAllByIds" resultType="com.bb.pj.sys.entity.Order">
+		select * from order1 
+		where  
+		 id in 
+		<foreach collection="ids" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</select> 
+	
+	 <insert id="insertObject">
+		insert into tang_05(
+		id,name,num,price,spid) 
+		values(#{id},#{goodName},#{number},
+		#{price},#{goodId})
+	</insert> 
+	<select id="findPages" resultType="com.bb.pj.sys.entity.Order">
+		select * 
+		from order1 
+		<include refid="queryWhereNickname"/>
+		limit #{startIndex},#{pageSize}
+	</select>
+	
+	
+	<select id="getRowCount" resultType="int">
+		select count(*) from order1
+		<include refid="queryWhereNickname"/>
+	</select>
+	<sql id="queryWhereNickname">
+	<where>
+		<if test="nickName!=null and nickName!=''">
+			username like concat("%",#{username},"%")
+		</if>
+	</where>	
+	</sql>
+	<update id="updateOrder">
+		update order1 set state=1 , company=#{wuliugs}
+		, trackNumber=#{danhao} where id=#{id}
+	</update>
+	<update id="updateZT">
+		update order1 set stateType=1 where id in
+		<foreach collection="ids" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</update>
+</mapper>
